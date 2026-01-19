@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { API } from "./services/api"
 import Auth from "./components/Auth"
 import Dashboard from "./components/Dashboard"
@@ -45,12 +45,13 @@ function App() {
 
   // ---------- TASKS ----------
 
-  const getTasks = async () => {
-    const res = await API.get("/tasks", {
-      headers: { authorization: token }
-    })
-    setTasks(res.data)
-  }
+  const getTasks = useCallback(async () => {
+  const res = await API.get("/tasks", {
+    headers: { authorization: token }
+  })
+  setTasks(res.data)
+}, [token])
+
 
   const addTask = async () => {
     if (!title) return
@@ -84,8 +85,9 @@ function App() {
   // ---------- LOAD TASKS ----------
 
   useEffect(() => {
-    if (token) getTasks()
-  }, [token])
+  if (token) getTasks()
+}, [token, getTasks])
+
 
   // ---------- AUTH UI ----------
 
